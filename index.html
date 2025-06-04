@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Glitch Syndicate Puzzle</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Orbitron', sans-serif;
@@ -26,9 +26,22 @@
     }
 
     #timer {
-      font-size: 1.2em;
+      width: 280px; /* 4 columns * 70px */
+      height: 20px;
+      background: #222;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+      overflow: hidden;
       margin-bottom: 10px;
       z-index: 2;
+      position: relative;
+    }
+
+    #timer-bar {
+      height: 100%;
+      background: #0f0;
+      width: 100%;
+      transition: width 1s linear;
     }
 
     #grid {
@@ -71,33 +84,40 @@
       z-index: 2;
     }
 
-    /* Watermark */
+    /* Watermark area */
     .watermark {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 6em;
-      color: rgba(0, 255, 0, 0.05);
+      color: rgba(0, 255, 0, 0.03);
       white-space: nowrap;
       user-select: none;
       pointer-events: none;
       z-index: 0;
       font-weight: bold;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="watermark">GLITCH SYNDICATE</div>
+
   <h1>Click Numbers 1 to 28</h1>
-  <div id="timer">Time: 40s</div>
+
+  <div id="timer">
+    <div id="timer-bar"></div>
+  </div>
+
   <div id="grid"></div>
   <div id="message"></div>
 
   <script>
     const grid = document.getElementById('grid');
-    const timerDisplay = document.getElementById('timer');
+    const timerBar = document.getElementById('timer-bar');
     const message = document.getElementById('message');
+
     let currentNumber = 1;
     let timeLeft = 40;
     let interval, shuffleInterval;
@@ -130,26 +150,24 @@
       });
     }
 
-   function handleClick(e) {
-  const num = parseInt(e.target.dataset.num);
-  if (num === currentNumber) {
-    clickedNumbers.add(num);
-    currentNumber++;
+    function handleClick(e) {
+      const num = parseInt(e.target.dataset.num);
+      if (num === currentNumber) {
+        clickedNumbers.add(num);
+        currentNumber++;
+        e.target.classList.add('clicked');
+        e.target.removeEventListener('click', handleClick);
 
-    // Mark clicked cell immediately without refreshing grid
-    e.target.classList.add('clicked');
-    e.target.removeEventListener('click', handleClick);
-
-    if (currentNumber > 28) {
-      endGame(true);
+        if (currentNumber > 28) {
+          endGame(true);
+        }
+      }
     }
-  }
-}
-
 
     function updateTimer() {
       timeLeft--;
-      timerDisplay.textContent = `Time: ${timeLeft}s`;
+      const percent = (timeLeft / 40) * 100;
+      timerBar.style.width = percent + '%';
       if (timeLeft === 0) {
         endGame(false);
       }
@@ -160,13 +178,16 @@
       clearInterval(shuffleInterval);
       const cells = document.querySelectorAll('.cell');
       cells.forEach(cell => cell.removeEventListener('click', handleClick));
-      message.textContent = won ? "🎉 You Win!" : "⏰ Time's Up!";
+      message.textContent = won ? "🎉 Tracker Removed!" : "Locked out!";
     }
 
     function startGame() {
       currentNumber = 1;
+      timeLeft = 40;
       clickedNumbers.clear();
       createGrid();
+      timerBar.style.width = '100%';
+      message.textContent = '';
       interval = setInterval(updateTimer, 1000);
       shuffleInterval = setInterval(() => {
         if (timeLeft > 0) createGrid();
