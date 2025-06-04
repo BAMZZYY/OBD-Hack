@@ -130,17 +130,22 @@
       });
     }
 
-    function handleClick(e) {
-      const num = parseInt(e.target.dataset.num);
-      if (num === currentNumber) {
-        clickedNumbers.add(num);
-        currentNumber++;
-        createGrid();
-        if (currentNumber > 28) {
-          endGame(true);
-        }
-      }
+   function handleClick(e) {
+  const num = parseInt(e.target.dataset.num);
+  if (num === currentNumber) {
+    clickedNumbers.add(num);
+    currentNumber++;
+
+    // Mark clicked cell immediately without refreshing grid
+    e.target.classList.add('clicked');
+    e.target.removeEventListener('click', handleClick);
+
+    if (currentNumber > 28) {
+      endGame(true);
     }
+  }
+}
+
 
     function updateTimer() {
       timeLeft--;
