@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Number Sequence Puzzle</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #timer {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(7, 60px);
+      grid-gap: 10px;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background: #333;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2em;
+      border-radius: 8px;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .cell:hover {
+      background: #555;
+    }
+    .disabled {
+      background: #222;
+      cursor: not-allowed;
+      color: #666;
+    }
+    #message {
+      margin-top: 15px;
+      font-size: 1.4em;
+    }
+  </style>
+</head>
+<body>
+  <h1>Click Numbers 1 to 28</h1>
+  <div id="timer">Time: 40s</div>
+  <div id="grid"></div>
+  <div id="message"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const timerDisplay = document.getElementById('timer');
+    const message = document.getElementById('message');
+    let currentNumber = 1;
+    let timeLeft = 40;
+    let interval, shuffleInterval;
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function createGrid() {
+      const numbers = Array.from({ length: 28 }, (_, i) => i + 1);
+      shuffleArray(numbers);
+      grid.innerHTML = '';
+      numbers.forEach(num => {
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.textContent = num;
+        cell.dataset.num = num;
+        cell.addEventListener('click', handleClick);
+        grid.appendChild(cell);
+      });
+    }
+
+    function handleClick(e) {
+      const num = parseInt(e.target.dataset.num);
+      if (num === currentNumber) {
+        e.target.classList.add('disabled');
+        e.target.removeEventListener('click', handleClick);
+        currentNumber++;
+        if (currentNumber > 28) {
+          endGame(true);
+        }
+      }
+    }
+
+    function updateTimer() {
+      timeLeft--;
+      timerDisplay.textContent = `Time: ${timeLeft}s`;
+      if (timeLeft === 0) {
+        endGame(false);
+      }
+    }
+
+    function endGame(won) {
+      clearInterval(interval);
+      clearInterval(shuffleInterval);
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => cell.removeEventListener('click', handleClick));
+      message.textContent = won ? "🎉 You Win!" : "⏰ Time's Up!";
+    }
+
+    function startGame() {
+      createGrid();
+      interval = setInterval(updateTimer, 1000);
+      shuffleInterval = setInterval(() => {
+        if (timeLeft > 0) createGrid();
+      }, 10000);
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
