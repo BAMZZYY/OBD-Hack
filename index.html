@@ -3,33 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sequential Number Puzzle</title>
-  <link href="https://fonts.googleapis.com/css2?family=Digital+7&display=swap" rel="stylesheet">
+  <title>Glitch Syndicate Puzzle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Digital-7', sans-serif;
+      font-family: 'Orbitron', sans-serif;
       background: #111;
-      color: #fff;
+      color: #0f0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden;
+      position: relative;
     }
+
     h1 {
       margin-bottom: 10px;
+      z-index: 2;
     }
+
     #timer {
       font-size: 1.2em;
       margin-bottom: 10px;
+      z-index: 2;
     }
+
     #grid {
       display: grid;
       grid-template-columns: repeat(4, 70px); /* 4 columns */
       grid-template-rows: repeat(7, 70px);    /* 7 rows */
       gap: 10px;
+      z-index: 2;
     }
+
     .cell {
       width: 70px;
       height: 70px;
@@ -45,21 +54,41 @@
       border: 2px solid #444;
       transition: all 0.2s;
     }
+
     .cell:hover {
       background: #333;
     }
+
     .clicked {
       background: #0f0;
       color: #000;
       cursor: default;
     }
+
     #message {
       margin-top: 15px;
       font-size: 1.4em;
+      z-index: 2;
+    }
+
+    /* Watermark */
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 6em;
+      color: rgba(0, 255, 0, 0.05);
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none;
+      z-index: 0;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <div class="watermark">GLITCH SYNDICATE</div>
   <h1>Click Numbers 1 to 28</h1>
   <div id="timer">Time: 40s</div>
   <div id="grid"></div>
@@ -106,7 +135,7 @@
       if (num === currentNumber) {
         clickedNumbers.add(num);
         currentNumber++;
-        createGrid(); // refresh grid to keep highlighting
+        createGrid();
         if (currentNumber > 28) {
           endGame(true);
         }
@@ -143,3 +172,4 @@
   </script>
 </body>
 </html>
+
